@@ -11,21 +11,33 @@
       "type": "custom",
       "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
     },
-    "nuru_backend_backend": {
-      "main": "src/nuru_backend_backend/main.mo",
-      "type": "motoko"
-    },
-    "nuru_backend_frontend": {
-      "dependencies": [
-        "nuru_backend_backend"
-      ],
-      "source": [
-        "src/nuru_backend_frontend/dist"
-      ],
-      "type": "assets",
-      "workspace": "nuru_backend_frontend"
-    }
+  "nuru_backend": {
+    "main": "src/nuru_backend/main.mo",
+    "type": "motoko"
   },
+  "canister_two": {
+    "main": "src/nuru_backend/bitcoin.mo",
+    "type": "motoko"
+  },
+  "canister_three": {
+    "main": "src/nuru_backend/governancekyc.mo",
+    "type": "motoko"
+  },
+  "canister_four": {
+    "main": "src/nuru_backend/yieldmanager.mo",
+    "type": "motoko"
+  },
+  "nuru_frontend": {
+    "dependencies": [
+      "nuru_backend"
+    ],
+    "source": [
+      "src/nuru_frontend/dist"
+    ],
+    "type": "assets",
+    "workspace": "nuru_frontend"
+  }
+},
   "defaults": {
     "bitcoin": {
       "enabled": true,

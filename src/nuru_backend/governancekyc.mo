@@ -8,48 +8,50 @@ import Nat "mo:base/Nat";
 import Text "mo:base/Text";
 import Nat32 "mo:base/Nat32";
 
-type UserId = Principal;
-type ProposalId = Nat;
 
-type KYCStatus = {
-    #pending;
-    #verified;
-    #rejected;
-    #expired;
-};
-
-type KYCData = {
-    userId: UserId;
-    status: KYCStatus;
-    submittedAt: Time.Time;
-    verifiedAt: ?Time.Time;
-    documentHash: ?Text;
-    tier: { #basic; #premium };
-};
-
-type Proposal = {
-    id: ProposalId;
-    proposer: UserId;
-    title: Text;
-    description: Text;
-    proposalType: { #parameterChange; #newFeature; #treasurySpend };
-    votingPower: Nat;
-    votesFor: Nat;
-    votesAgainst: Nat;
-    status: { #active; #passed; #rejected; #executed };
-    createdAt: Time.Time;
-    votingDeadline: Time.Time;
-};
-
-type Vote = {
-    voter: UserId;
-    proposalId: ProposalId;
-    vote: { #for_; #against };
-    votingPower: Nat;
-    timestamp: Time.Time;
-};
 
 actor GovernanceKYC {
+
+    type UserId = Principal;
+    type ProposalId = Nat;
+
+    type KYCStatus = {
+        #pending;
+        #verified;
+        #rejected;
+        #expired;
+    };
+
+    type KYCData = {
+        userId: UserId;
+        status: KYCStatus;
+        submittedAt: Time.Time;
+        verifiedAt: ?Time.Time;
+        documentHash: ?Text;
+        tier: { #basic; #premium };
+    };
+
+    type Proposal = {
+        id: ProposalId;
+        proposer: UserId;
+        title: Text;
+        description: Text;
+        proposalType: { #parameterChange; #newFeature; #treasurySpend };
+        votingPower: Nat;
+        votesFor: Nat;
+        votesAgainst: Nat;
+        status: { #active; #passed; #rejected; #executed };
+        createdAt: Time.Time;
+        votingDeadline: Time.Time;
+    };
+
+    type Vote = {
+        voter: UserId;
+        proposalId: ProposalId;
+        vote: { #for_; #against };
+        votingPower: Nat;
+        timestamp: Time.Time;
+    };
 
     private stable var nextProposalId: Nat = 0;
     var kycRecords = HashMap.HashMap<UserId, KYCData>(10, Principal.equal, Principal.hash);

@@ -3,7 +3,7 @@
     "node": ">=16.0.0",
     "npm": ">=7.0.0"
   },
-  "name": "nuru_backend",
+  "name": "nuru_finance",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "prebuild": "npm run prebuild --workspaces --if-present",
@@ -13,6 +13,6 @@
   },
   "type": "module",
   "workspaces": [
-    "src/nuru_backend_frontend"
+    "src/nuru_frontend"
   ]
 }

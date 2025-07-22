@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 "use client"
 
 import { useState } from "react"
@@ -27,7 +28,7 @@ import {
   Crown,
   Info,
 } from "lucide-react"
-import Link from "next/link"
+
 
 // Mock data based on your GovernanceKYC canister
 const mockKYCData = {

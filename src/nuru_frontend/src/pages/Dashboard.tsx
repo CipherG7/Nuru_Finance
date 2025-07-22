@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 "use client"
 
 import { useState } from "react"
@@ -7,7 +8,6 @@ import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Bitcoin, TrendingUp, Users, Shield, Plus, ArrowUpRight, Wallet, Vote, Sparkles } from "lucide-react"
-import Link from "next/link"
 
 // Mock data - in real app, this would come from your canisters
 const mockUserData = {

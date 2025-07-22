@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 "use client"
 
 import { useState } from "react"
@@ -27,7 +29,6 @@ import {
   User,
   TrendingUp,
 } from "lucide-react"
-import Link from "next/link"
 
 // Mock admin data based on your GovernanceKYC canister
 const mockPendingKYC = [

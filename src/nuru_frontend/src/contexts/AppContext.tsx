@@ -5,7 +5,7 @@ import { backendService } from "../lib/backend";
 // Import types from the generated declarations
 import type { User, SavingsPool } from "../../../declarations/nuru_backend/nuru_backend.did";
 import type { Proposal } from "../../../declarations/canister_three/canister_three.did";
-import type { YieldStrategy } from "../../../declarations/canister_four/canister_four.did";
+import type { YieldStrategy, UserPosition } from "../../../declarations/canister_four/canister_four.did";
 
 interface AppUser {
   profile: User | null;
@@ -18,6 +18,7 @@ interface AppContextType {
   user: AppUser;
   proposals: Proposal[];
   yieldStrategies: YieldStrategy[];
+  userPositions: UserPosition[];
   savingsPools: SavingsPool[];
   isLoading: boolean;
   error: string | null;
@@ -46,6 +47,10 @@ interface AppContextType {
   // Yield actions
   enterPosition: (strategyId: string, amount: number) => Promise<boolean>;
   refreshYieldStrategies: () => Promise<void>;
+  getUserPositions: () => Promise<void>;
+  claimYields: () => Promise<boolean>;
+  calculateCurrentYield: () => Promise<number>;
+  projectReturns: (amount: number, strategyId: string, duration: bigint) => Promise<number>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -72,6 +77,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [yieldStrategies, setYieldStrategies] = useState<YieldStrategy[]>([]);
+  const [userPositions, setUserPositions] = useState<UserPosition[]>([]);
   const [savingsPools, setSavingsPools] = useState<SavingsPool[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -354,7 +360,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     try {
       const success = await backendService.enterPosition(strategyId, amount);
       if (success) {
-        await Promise.all([getBalance(), refreshYieldStrategies()]);
+        await Promise.all([getBalance(), refreshYieldStrategies(), getUserPositions()]);
       }
       return success;
     } catch (err) {
@@ -366,10 +372,58 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   };
 
+  const getUserPositions = async (): Promise<void> => {
+    try {
+      const positions = await backendService.getUserPositions();
+      setUserPositions(positions);
+    } catch (err) {
+      console.error("Error getting user positions:", err);
+    }
+  };
+
+  const claimYields = async (): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const claimed = await backendService.claimYields();
+      if (claimed > 0) {
+        await Promise.all([getBalance(), getUserPositions()]);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      setError("Failed to claim yields");
+      console.error("Claim yields error:", err);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const calculateCurrentYield = async (): Promise<number> => {
+    try {
+      return await backendService.calculateCurrentYield();
+    } catch (err) {
+      console.error("Error calculating current yield:", err);
+      return 0;
+    }
+  };
+
+  const projectReturns = async (amount: number, strategyId: string, duration: bigint): Promise<number> => {
+    try {
+      return await backendService.projectReturns(amount, strategyId, duration);
+    } catch (err) {
+      console.error("Error projecting returns:", err);
+      return 0;
+    }
+  };
+
   const contextValue: AppContextType = {
     user,
     proposals,
     yieldStrategies,
+    userPositions,
     savingsPools,
     isLoading,
     error,
@@ -387,7 +441,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     createProposal,
     refreshProposals,
     enterPosition,
-    refreshYieldStrategies
+    refreshYieldStrategies,
+    getUserPositions,
+    claimYields,
+    calculateCurrentYield,
+    projectReturns
   };
 
   return (

@@ -1,4 +1,4 @@
-# Nuru Finance 💰
+# Nuru Finance – Decentralized Savings, Lending & Investing on ICP
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![DFX](https://img.shields.io/badge/dfx-0.15.0+-green.svg)](https://internetcomputer.org/)
@@ -6,18 +6,29 @@
 [![TypeScript](https://img.shields.io/badge/typescript-5.1+-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/react-18.2+-61DAFB.svg)](https://reactjs.org/)
 
-> A decentralized finance (DeFi) platform built on the Internet Computer Protocol (ICP) that enables users to participate in collaborative savings pools, yield farming, governance, and Bitcoin integration.
+##  Overview
+**Nuru** is a decentralized platform that empowers users to **save, lend, and invest Bitcoin** either individually or in groups using the **Internet Computer Protocol (ICP)**. Key capabilities include:
 
-## 🌟 Features
+- Solo and group Bitcoin savings with multisig support  
+- Peer-to-peer lending and borrowing  
+- Dynamic DeFi yields with up to 15%+ APY  
+- Integrated KYC and decentralized governance  
+- Future-ready with multi-currency and fiat ramp support
 
-- **💳 Savings Pools**: Create and join collaborative savings groups with target goals
-- **📈 Yield Management**: Earn returns through various DeFi strategies
-- **🏛️ Governance & KYC**: Participate in platform governance with integrated KYC verification
-- **₿ Bitcoin Integration**: Seamless Bitcoin wallet connectivity and transactions
-- **🔐 Internet Identity**: Secure authentication using ICP's Internet Identity
-- **📱 Modern UI**: Responsive React frontend with Tailwind CSS and Radix UI components
+---
 
-## 🏗️ Architecture
+##  Key Features
+
+- **Solo & Group Savings:** Create personal goals or group pools using multisig logic.
+- **Bitcoin DeFi Integration:** Leverages ckBTC for direct, native Bitcoin functionality.
+- **Dynamic Yields:** Offers APYs from 4.5% to 15%+ through HODLing, staking, lending.
+- **KYC System:** Modular user verification using HTTPS outcalls.
+- **Governance & DAO:** Token-weighted proposals and voting on platform upgrades.
+- **Multi-Currency Support:** Roadmap includes fiat on/off ramps and stablecoins.
+- - **Internet Identity**: Secure authentication using ICP's Internet Identity.
+- **Modern UI**: Responsive React frontend with Tailwind CSS and Radix UI components.
+
+##  Architecture
 
 Nuru Finance is built as a multi-canister application on the Internet Computer:
 
@@ -29,7 +40,7 @@ Nuru Finance is built as a multi-canister application on the Internet Computer:
 └── nuru_frontend                   # React TypeScript frontend application
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -71,7 +82,7 @@ Nuru Finance is built as a multi-canister application on the Internet Computer:
    - Frontend: `http://localhost:3000`
    - Candid UI: `http://localhost:4943/?canisterId={canister_id}`
 
-## 🛠️ Development
+##  Development
 
 ### Project Structure
 
@@ -125,7 +136,7 @@ CANISTER_ID_NURU_BACKEND=...
 CANISTER_ID_NURU_FRONTEND=...
 ```
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Run all tests
@@ -154,7 +165,7 @@ dfx deploy
 dfx deploy --network ic
 ```
 
-## 📚 API Documentation
+##  API Documentation
 
 ### Core Backend Functions
 
@@ -169,7 +180,7 @@ The main backend canister (`nuru_backend`) provides the following key functions:
 
 For complete API documentation, see the Candid interface files in `src/declarations/`.
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions from the community! Please follow these guidelines:
 
@@ -230,11 +241,11 @@ Please use the [GitHub Issues](https://github.com/CipherG7/Nuru_Finance/issues) 
 - **Documentation**: Update documentation for new features
 - **Testing**: Maintain or improve test coverage
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+##  Links
 
 - **Internet Computer**: [internetcomputer.org](https://internetcomputer.org/)
 - **Motoko Documentation**: [motoko.dev](https://motoko.dev/)
@@ -242,13 +253,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 
-## 🙏 Acknowledgments
-
 - Built on the [Internet Computer Protocol](https://internetcomputer.org/)
 - UI components from [Radix UI](https://www.radix-ui.com/)
 - Styling with [Tailwind CSS](https://tailwindcss.com/)
 - Icons from [Lucide React](https://lucide.dev/)
 
 ---
-
-**Happy coding! 🚀**

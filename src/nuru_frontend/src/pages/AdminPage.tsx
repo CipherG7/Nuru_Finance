@@ -156,8 +156,8 @@ export default function AdminPage() {
   const [isKYCDialogOpen, setIsKYCDialogOpen] = useState(false)
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [adminAction, setAdminAction] = useState("")
+  // const [statusFilter, setStatusFilter] = useState("all")
+  // const [adminAction, setAdminAction] = useState("")
 
   const handleKYCVerification = (userId: string, approved: boolean, reason?: string) => {
     // In real app, this would call your GovernanceKYC canister's verifyKYC function
@@ -249,23 +249,23 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto border-b border-gray-800">
-        <Link href="/" className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-lg flex items-center justify-center">
             <Bitcoin className="w-5 h-5 text-white" />
           </div>
           <span className="text-white font-bold text-xl">Nuru Finance Admin</span>
         </Link>
         <div className="flex items-center space-x-6">
-          <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
             Dashboard
           </Link>
-          <Link href="/savings" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/savings" className="text-gray-300 hover:text-white transition-colors">
             Savings
           </Link>
-          <Link href="/yield" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/yield" className="text-gray-300 hover:text-white transition-colors">
             Yield
           </Link>
-          <Link href="/governance" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/governance" className="text-gray-300 hover:text-white transition-colors">
             Governance
           </Link>
           <Badge className="bg-red-900/50 text-red-400 border-red-800">

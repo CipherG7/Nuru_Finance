@@ -1,7 +1,7 @@
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
-import { Shield, Users, TrendingUp, Wallet, Vote, Bitcoin, ArrowRight, CheckCircle, Sparkles, Zap } from "lucide-react"
+import { Shield, Users, TrendingUp, Wallet, Vote, Bitcoin, ArrowRight, CheckCircle, Zap } from "lucide-react"
 import { Link } from "react-router-dom"
 import { AuthComponent } from "../components/AuthComponent"
 
@@ -38,12 +38,17 @@ export default function HomePage(): JSX.Element {
 
       {/* Navigation with glass effect */}
       <nav className="relative z-10 flex items-center justify-between p-6 max-w-7xl mx-auto glass-dark rounded-lg mx-6 mt-4 animate-slide-up">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-lg flex items-center justify-center animate-pulse">
-            <Bitcoin className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-white font-bold text-xl">Nuru Finance</span>
-        </div>
+       {/* Replace this section */}
+<div className="flex items-center space-x-2">
+  <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+    <img 
+      src="/Nuru_logo.svg" 
+      alt="Nuru_logo" 
+      className="w-12 h-12 object-contain"
+    />
+  </div>
+  <span className="text-white font-bold text-xl">Nuru Finance</span>
+</div>
         <div className="hidden md:flex items-center space-x-8">
           <Link to="/dashboard" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105">
             Dashboard
@@ -66,12 +71,6 @@ export default function HomePage(): JSX.Element {
 
       {/* Hero Section with enhanced animations */}
       <div className="relative z-10 text-center px-6 mb-16 animate-slide-up">
-        <Badge
-          className="mb-6 bg-orange-900/50 text-orange-300 border-orange-700 animate-bounce-in glass"
-        >
-          <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
-          Decentralized Bitcoin Savings & Yield Platform
-        </Badge>
 
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight animate-typing">
           Your Bitcoin,

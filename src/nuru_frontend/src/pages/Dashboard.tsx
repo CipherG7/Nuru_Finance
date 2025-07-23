@@ -98,10 +98,14 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto border-b border-gray-800">
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-lg flex items-center justify-center">
-            <Bitcoin className="w-5 h-5 text-white" />
-          </div>
+        <Link href="/" className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+    <img 
+      src="/Nuru_logo.svg" 
+      alt="Nuru_logo" 
+      className="w-12 h-12 object-contain"
+    />
+  </div>
           <span className="text-white font-bold text-xl">Nuru Finance</span>
         </Link>
         <div className="flex items-center space-x-6">

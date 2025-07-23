@@ -236,16 +236,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Documentation**: [Nuru Finance Docs](https://docs.nurufinance.io)
 - **Internet Computer**: [internetcomputer.org](https://internetcomputer.org/)
 - **Motoko Documentation**: [motoko.dev](https://motoko.dev/)
 - **DFX SDK**: [SDK Documentation](https://internetcomputer.org/docs/current/developer-docs/setup/install)
 
-## 🆘 Support
 
-- **Discord**: [Join our community](https://discord.gg/nurufinance)
-- **Twitter**: [@NuruFinance](https://twitter.com/nurufinance)
-- **Email**: support@nurufinance.io
 
 ## 🙏 Acknowledgments
 

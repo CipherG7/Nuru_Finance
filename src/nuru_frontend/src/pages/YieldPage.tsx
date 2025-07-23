@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 "use client"
 
 import { useState } from "react"
@@ -21,7 +22,6 @@ import {
   DollarSign,
   Info,
 } from "lucide-react"
-import Link from "next/link"
 
 // Mock data based on your YieldManager canister
 const mockStrategies = [
@@ -172,16 +172,16 @@ export default function YieldPage() {
           <span className="text-white font-bold text-xl">Nuru Finance</span>
         </Link>
         <div className="flex items-center space-x-6">
-          <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
             Dashboard
           </Link>
-          <Link href="/savings" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/savings" className="text-gray-300 hover:text-white transition-colors">
             Savings
           </Link>
-          <Link href="/governance" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/governance" className="text-gray-300 hover:text-white transition-colors">
             Governance
           </Link>
-          <Link href="/wallet" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/wallet" className="text-gray-300 hover:text-white transition-colors">
             Wallet
           </Link>
           <Button className="bg-green-600 hover:bg-green-700 text-white">Connected</Button>

@@ -3,8 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
 import { Shield, Users, TrendingUp, Wallet, Vote, Bitcoin, ArrowRight, CheckCircle, Zap } from "lucide-react"
 import { Link } from "react-router-dom"
+import { AuthComponent } from "../components/AuthComponent"
 
 export default function HomePage(): JSX.Element {
+  // const { user, yieldStrategies, proposals } = useApp();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden">
       {/* Animated background particles */}
@@ -63,13 +66,7 @@ export default function HomePage(): JSX.Element {
             Wallet
           </Link>
         </div>
-        <Link to="/dashboard">
-          <Button
-            className="border-orange-500 text-orange-300 hover:bg-orange-500 hover:text-white bg-transparent ripple transition-all duration-300"
-          >
-            Launch App
-          </Button>
-        </Link>
+        <AuthComponent />
       </nav>
 
       {/* Hero Section with enhanced animations */}

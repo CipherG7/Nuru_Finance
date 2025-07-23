@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 "use client"
 
 import { useState } from "react"
@@ -7,7 +8,6 @@ import { Badge } from "../components/ui/badge"
 import { Progress } from "../components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Bitcoin, TrendingUp, Users, Shield, Plus, ArrowUpRight, Wallet, Vote, Sparkles } from "lucide-react"
-import Link from "next/link"
 
 // Mock data - in real app, this would come from your canisters
 const mockUserData = {
@@ -109,16 +109,16 @@ export default function DashboardPage() {
           <span className="text-white font-bold text-xl">Nuru Finance</span>
         </Link>
         <div className="flex items-center space-x-6">
-          <Link href="/savings" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/savings" className="text-gray-300 hover:text-white transition-colors">
             Savings
           </Link>
-          <Link href="/yield" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/yield" className="text-gray-300 hover:text-white transition-colors">
             Yield
           </Link>
-          <Link href="/governance" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/governance" className="text-gray-300 hover:text-white transition-colors">
             Governance
           </Link>
-          <Link href="/wallet" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/wallet" className="text-gray-300 hover:text-white transition-colors">
             Wallet
           </Link>
           <Button
@@ -257,7 +257,7 @@ export default function DashboardPage() {
               <TabsContent value="savings" className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">Your Savings Pools</h2>
-                  <Link href="/savings">
+                  <Link to="/savings">
                     <Button className="bg-orange-600 hover:bg-orange-700">
                       <Plus className="w-4 h-4 mr-2" />
                       Create Pool
@@ -317,7 +317,7 @@ export default function DashboardPage() {
               <TabsContent value="yield" className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">Your Yield Positions</h2>
-                  <Link href="/yield">
+                  <Link to="/yield">
                     <Button className="bg-green-600 hover:bg-green-700">
                       <Plus className="w-4 h-4 mr-2" />
                       New Position
@@ -372,7 +372,7 @@ export default function DashboardPage() {
               <TabsContent value="governance" className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">Active Proposals</h2>
-                  <Link href="/governance">
+                  <Link to="/governance">
                     <Button className="bg-purple-600 hover:bg-purple-700">
                       <Plus className="w-4 h-4 mr-2" />
                       Create Proposal

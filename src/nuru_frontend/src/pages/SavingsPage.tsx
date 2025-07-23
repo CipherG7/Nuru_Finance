@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 "use client"
 
 import { useState } from "react"
@@ -12,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { Bitcoin, Users, Shield, Plus, Calendar, User } from "lucide-react"
-import Link from "next/link"
 
 // Mock data for existing pools
 const mockActivePools = [
@@ -99,16 +99,16 @@ export default function SavingsPage() {
           <span className="text-white font-bold text-xl">Nuru Finance</span>
         </Link>
         <div className="flex items-center space-x-6">
-          <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
             Dashboard
           </Link>
-          <Link href="/yield" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/yield" className="text-gray-300 hover:text-white transition-colors">
             Yield
           </Link>
-          <Link href="/governance" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/governance" className="text-gray-300 hover:text-white transition-colors">
             Governance
           </Link>
-          <Link href="/wallet" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/wallet" className="text-gray-300 hover:text-white transition-colors">
             Wallet
           </Link>
           <Button className="bg-green-600 hover:bg-green-700 text-white">Connected</Button>

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 "use client"
 
 import { useState } from "react"
@@ -26,7 +27,7 @@ import {
   Crown,
   Info,
 } from "lucide-react"
-import Link from "next/link"
+
 
 // Mock data based on your GovernanceKYC canister
 const mockKYCData = {
@@ -211,16 +212,16 @@ export default function GovernancePage() {
           <span className="text-white font-bold text-xl">Nuru Finance</span>
         </Link>
         <div className="flex items-center space-x-6">
-          <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
             Dashboard
           </Link>
-          <Link href="/savings" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/savings" className="text-gray-300 hover:text-white transition-colors">
             Savings
           </Link>
-          <Link href="/yield" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/yield" className="text-gray-300 hover:text-white transition-colors">
             Yield
           </Link>
-          <Link href="/wallet" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/wallet" className="text-gray-300 hover:text-white transition-colors">
             Wallet
           </Link>
           <Button className="bg-green-600 hover:bg-green-700 text-white">Connected</Button>

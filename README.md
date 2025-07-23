@@ -1,59 +1,259 @@
-# `nuru_finance`
+# Nuru Finance 💰
 
-Welcome to your new `nuru_finance` project and to the Internet Computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![DFX](https://img.shields.io/badge/dfx-0.15.0+-green.svg)](https://internetcomputer.org/)
+[![Motoko](https://img.shields.io/badge/motoko-latest-orange.svg)](https://motoko.dev/)
+[![TypeScript](https://img.shields.io/badge/typescript-5.1+-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/react-18.2+-61DAFB.svg)](https://reactjs.org/)
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+> A decentralized finance (DeFi) platform built on the Internet Computer Protocol (ICP) that enables users to participate in collaborative savings pools, yield farming, governance, and Bitcoin integration.
 
-To learn more before you start working with `nuru_finance`, see the following documentation available online:
+## 🌟 Features
 
-- [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
-- [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-- [Motoko Programming Language Guide](https://internetcomputer.org/docs/current/motoko/main/motoko)
-- [Motoko Language Quick Reference](https://internetcomputer.org/docs/current/motoko/main/language-manual)
+- **💳 Savings Pools**: Create and join collaborative savings groups with target goals
+- **📈 Yield Management**: Earn returns through various DeFi strategies
+- **🏛️ Governance & KYC**: Participate in platform governance with integrated KYC verification
+- **₿ Bitcoin Integration**: Seamless Bitcoin wallet connectivity and transactions
+- **🔐 Internet Identity**: Secure authentication using ICP's Internet Identity
+- **📱 Modern UI**: Responsive React frontend with Tailwind CSS and Radix UI components
 
-If you want to start working on your project right away, you might want to try the following commands:
+## 🏗️ Architecture
 
-```bash
-cd nuru_finance/
-dfx help
-dfx canister --help
+Nuru Finance is built as a multi-canister application on the Internet Computer:
+
+```
+├── nuru_backend (main.mo)          # Core business logic and user management
+├── canister_two (bitcoin.mo)       # Bitcoin integration and wallet management
+├── canister_three (governancekyc.mo) # Governance voting and KYC verification
+├── canister_four (yieldmanager.mo)  # Yield farming and investment strategies
+└── nuru_frontend                   # React TypeScript frontend application
 ```
 
-## Running the project locally
+## 🚀 Quick Start
 
-If you want to test your project locally, you can use the following commands:
+### Prerequisites
+
+- **Node.js** ≥ 16.0.0
+- **npm** ≥ 7.0.0
+- **DFX** ≥ 0.15.0 ([Installation Guide](https://internetcomputer.org/docs/current/developer-docs/setup/install))
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/CipherG7/Nuru_Finance.git
+   cd Nuru_Finance
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the local Internet Computer replica**
+   ```bash
+   dfx start --background
+   ```
+
+4. **Deploy canisters and start development**
+   ```bash
+   # Deploy all canisters
+   dfx deploy
+   
+   # Generate type declarations
+   dfx generate
+   
+   # Start frontend development server
+   npm start
+   ```
+
+5. **Access the application**
+   - Frontend: `http://localhost:3000`
+   - Candid UI: `http://localhost:4943/?canisterId={canister_id}`
+
+## 🛠️ Development
+
+### Project Structure
+
+```
+nuru_finance/
+├── dfx.json                    # DFX configuration
+├── package.json               # Root package configuration
+├── README.md                  # This file
+├── tsconfig.json             # TypeScript configuration
+├── src/
+│   ├── declarations/         # Auto-generated type declarations
+│   ├── nuru_backend/        # Motoko backend canisters
+│   │   ├── main.mo          # Core savings and user management
+│   │   ├── bitcoin.mo       # Bitcoin integration
+│   │   ├── governancekyc.mo # Governance and KYC
+│   │   └── yieldmanager.mo  # Yield farming logic
+│   └── nuru_frontend/       # React frontend application
+│       ├── src/
+│       │   ├── components/  # Reusable UI components
+│       │   ├── contexts/    # React contexts
+│       │   ├── lib/         # Utility libraries
+│       │   └── pages/       # Application pages
+│       ├── public/          # Static assets
+│       └── package.json     # Frontend dependencies
+```
+
+### Available Scripts
 
 ```bash
-# Starts the replica, running in the background
-dfx start --background
+# Development
+npm start              # Start frontend development server
+npm run dev           # Alternative development command
+npm run build         # Build production bundle
+npm test              # Run test suite
+npm run format        # Format code with Prettier
 
-# Deploys your canisters to the replica and generates your candid interface
+# DFX Commands
+dfx start             # Start local IC replica
+dfx deploy            # Deploy all canisters
+dfx generate          # Generate type declarations
+dfx canister call     # Interact with canisters
+```
+
+### Environment Setup
+
+The project uses environment variables for configuration. Create a `.env` file in the root directory:
+
+```env
+DFX_NETWORK=local
+CANISTER_ID_NURU_BACKEND=...
+CANISTER_ID_NURU_FRONTEND=...
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run specific canister tests
+dfx canister call nuru_backend test_function
+
+# Frontend testing
+cd src/nuru_frontend
+npm test
+```
+
+## 🚀 Deployment
+
+### Local Deployment
+
+```bash
+dfx start --background
 dfx deploy
 ```
 
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
-
-If you have made changes to your backend canister, you can generate a new candid interface with
+### Mainnet Deployment
 
 ```bash
-npm run generate
+dfx deploy --network ic
 ```
 
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
+## 📚 API Documentation
 
-If you are making frontend changes, you can start a development server with
+### Core Backend Functions
 
-```bash
-npm start
-```
+The main backend canister (`nuru_backend`) provides the following key functions:
 
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
+- `createUser(btcAddress: ?Text)` - Register a new user
+- `createSavingsPool(name: Text, targetAmount: Float, duration: Int)` - Create a savings pool
+- `joinPool(poolId: Nat)` - Join an existing savings pool
+- `depositToPool(poolId: Nat, amount: Float)` - Deposit funds to a pool
+- `getUserProfile()` - Get current user's profile
+- `getAllPools()` - List all available savings pools
 
-### Note on frontend environment variables
+For complete API documentation, see the Candid interface files in `src/declarations/`.
 
-If you are hosting frontend code somewhere without using DFX, you may need to make one of the following adjustments to ensure your project does not fetch the root key in production:
+## 🤝 Contributing
 
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
+We welcome contributions from the community! Please follow these guidelines:
+
+### Getting Started
+
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/Nuru_Finance.git
+   cd Nuru_Finance
+   ```
+3. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+### Development Workflow
+
+1. **Set up the development environment** following the [Quick Start](#quick-start) guide
+2. **Make your changes** following our coding standards
+3. **Test your changes** thoroughly:
+   ```bash
+   npm test
+   dfx deploy
+   ```
+4. **Commit with conventional commits**:
+   ```bash
+   git commit -m "feat: add new savings pool feature"
+   ```
+5. **Push to your fork** and **create a Pull Request**
+
+### Coding Standards
+
+- **Motoko**: Follow [Motoko style guidelines](https://internetcomputer.org/docs/current/motoko/main/style)
+- **TypeScript/React**: Use ESLint and Prettier configurations
+- **Commits**: Use [Conventional Commits](https://www.conventionalcommits.org/)
+- **Testing**: Write tests for new features and bug fixes
+
+### Code Review Process
+
+1. All changes must be made via Pull Requests
+2. PRs require at least one approval from a maintainer
+3. All CI checks must pass
+4. Code coverage should not decrease
+
+### Reporting Issues
+
+Please use the [GitHub Issues](https://github.com/CipherG7/Nuru_Finance/issues) tracker to:
+
+- Report bugs (use the bug report template)
+- Request features (use the feature request template)
+- Ask questions (use the question template)
+
+### Development Guidelines
+
+- **Branch naming**: `feature/description`, `bugfix/description`, `hotfix/description`
+- **PR titles**: Follow conventional commit format
+- **Documentation**: Update documentation for new features
+- **Testing**: Maintain or improve test coverage
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- **Documentation**: [Nuru Finance Docs](https://docs.nurufinance.io)
+- **Internet Computer**: [internetcomputer.org](https://internetcomputer.org/)
+- **Motoko Documentation**: [motoko.dev](https://motoko.dev/)
+- **DFX SDK**: [SDK Documentation](https://internetcomputer.org/docs/current/developer-docs/setup/install)
+
+## 🆘 Support
+
+- **Discord**: [Join our community](https://discord.gg/nurufinance)
+- **Twitter**: [@NuruFinance](https://twitter.com/nurufinance)
+- **Email**: support@nurufinance.io
+
+## 🙏 Acknowledgments
+
+- Built on the [Internet Computer Protocol](https://internetcomputer.org/)
+- UI components from [Radix UI](https://www.radix-ui.com/)
+- Styling with [Tailwind CSS](https://tailwindcss.com/)
+- Icons from [Lucide React](https://lucide.dev/)
+
+---
+
+**Happy coding! 🚀**

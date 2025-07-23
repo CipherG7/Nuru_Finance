@@ -1,12 +1,10 @@
-# Nuru Finance 💰
+# Nuru Finance – Decentralized Savings, Lending & Investing on ICP
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![DFX](https://img.shields.io/badge/dfx-0.15.0+-green.svg)](https://internetcomputer.org/)
 [![Motoko](https://img.shields.io/badge/motoko-latest-orange.svg)](https://motoko.dev/)
 [![TypeScript](https://img.shields.io/badge/typescript-5.1+-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/react-18.2+-61DAFB.svg)](https://reactjs.org/)
-
-# Nuru – Decentralized Savings, Lending & Investing on ICP
 
 ##  Overview
 **Nuru** is a decentralized platform that empowers users to **save, lend, and invest Bitcoin** either individually or in groups using the **Internet Computer Protocol (ICP)**. Key capabilities include:
@@ -247,7 +245,7 @@ Please use the [GitHub Issues](https://github.com/CipherG7/Nuru_Finance/issues) 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+##  Links
 
 - **Documentation**: [Nuru Finance Docs](https://docs.nurufinance.io)
 - **Internet Computer**: [internetcomputer.org](https://internetcomputer.org/)

@@ -155,8 +155,8 @@ export default function AdminPage() {
   const [isKYCDialogOpen, setIsKYCDialogOpen] = useState(false)
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [adminAction, setAdminAction] = useState("")
+  // const [statusFilter, setStatusFilter] = useState("all")
+  // const [adminAction, setAdminAction] = useState("")
 
   const handleKYCVerification = (userId: string, approved: boolean, reason?: string) => {
     // In real app, this would call your GovernanceKYC canister's verifyKYC function

@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { Alert, AlertDescription } from "../components/ui/alert"
 import {
-  Bitcoin,
   Vote,
   Shield,
   Plus,
@@ -202,9 +201,13 @@ export default function GovernancePage() {
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto border-b border-gray-800">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-lg flex items-center justify-center">
-            <Bitcoin className="w-5 h-5 text-white" />
-          </div>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+    <img 
+      src="/Nuru_logo.svg" 
+      alt="Nuru_logo" 
+      className="w-12 h-12 object-contain"
+    />
+  </div>
           <span className="text-white font-bold text-xl">Nuru Finance</span>
         </Link>
         <div className="flex items-center space-x-6">
@@ -399,7 +402,7 @@ export default function GovernancePage() {
         {/* Main Content */}
         <Tabs defaultValue="proposals" className="space-y-6">
           <div className="flex items-center justify-between">
-            <TabsList className="bg-gray-900/50 border-gray-800">
+            <TabsList className="bg-gray-900/50 border-gray-800 text-white">
               <TabsTrigger value="proposals" className="data-[state=active]:bg-purple-600">
                 Proposals
               </TabsTrigger>
@@ -411,7 +414,7 @@ export default function GovernancePage() {
             {mockKYCData.status === "verified" && (
               <Dialog open={isCreateProposalOpen} onOpenChange={setIsCreateProposalOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-purple-600 hover:bg-purple-700">
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
                     <Plus className="w-4 h-4 mr-2" />
                     Create Proposal
                   </Button>

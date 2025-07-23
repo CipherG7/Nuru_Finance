@@ -34,8 +34,7 @@
     "source": [
       "src/nuru_frontend/dist"
     ],
-    "type": "assets",
-    "workspace": "nuru_frontend"
+    "type": "assets"
   }
 },
   "defaults": {

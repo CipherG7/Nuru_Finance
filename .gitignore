@@ -9,6 +9,7 @@
 
 # dfx temporary files
 .dfx/
+canister_ids.json
 
 # generated files
 **/declarations/
@@ -20,6 +21,18 @@ target/
 node_modules/
 dist/
 .svelte-kit/
+src/nuru_frontend/dist/
+src/nuru_frontend/.env
+src/nuru_frontend/.env.local
+src/nuru_frontend/.env.*.local
+src/nuru_frontend/.env.development.local
+src/nuru_frontend/.env.production.local
 
 # environment variables
-.env
+*.env
+
+# Logs
+*.log
+
+#Canister IDs
+/.dfx/local/lsp

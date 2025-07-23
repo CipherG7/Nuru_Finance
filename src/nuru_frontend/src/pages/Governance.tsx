@@ -202,23 +202,23 @@ export default function GovernancePage() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto border-b border-gray-800">
-        <Link href="/" className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-lg flex items-center justify-center">
             <Bitcoin className="w-5 h-5 text-white" />
           </div>
           <span className="text-white font-bold text-xl">Nuru Finance</span>
         </Link>
         <div className="flex items-center space-x-6">
-          <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
             Dashboard
           </Link>
-          <Link href="/savings" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/savings" className="text-gray-300 hover:text-white transition-colors">
             Savings
           </Link>
-          <Link href="/yield" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/yield" className="text-gray-300 hover:text-white transition-colors">
             Yield
           </Link>
-          <Link href="/wallet" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/wallet" className="text-gray-300 hover:text-white transition-colors">
             Wallet
           </Link>
           <Button className="bg-green-600 hover:bg-green-700 text-white">Connected</Button>

@@ -67,7 +67,9 @@ export const backendService = {
 
   async registerUser(): Promise<boolean> {
     try {
+      console.log("Backend service: Calling registerUser...");
       const result = await nuruBackendActor.registerUser();
+      console.log("Backend service: registerUser result:", result);
       return 'ok' in result;
     } catch (error) {
       console.error("Error registering user:", error);
@@ -88,8 +90,23 @@ export const backendService = {
 
   async createSavingsPool(name: string, targetAmount: number, deadline: bigint, poolType: 'individual' | 'group'): Promise<bigint | null> {
     try {
+      console.log("Backend service: Creating pool with params:", { name, targetAmount, deadline, poolType });
+      
       const poolTypeValue = poolType === 'individual' ? { individual: null } : { group: null };
-      const result = await nuruBackendActor.createSavingsPool(name, targetAmount, deadline, poolTypeValue);
+      // Convert targetAmount to Float and deadline to Time.Time (Int)
+      const targetAmountFloat = parseFloat(targetAmount.toString());
+      const deadlineInt = BigInt(Date.now() + Number(deadline) * 24 * 60 * 60 * 1000); // Convert days to milliseconds from now
+      
+      console.log("Backend service: Converted params:", { 
+        name, 
+        targetAmountFloat, 
+        deadlineInt: deadlineInt.toString(), 
+        poolTypeValue 
+      });
+      
+      const result = await nuruBackendActor.createSavingsPool(name, targetAmountFloat, deadlineInt, poolTypeValue);
+      console.log("Backend service: createSavingsPool result:", result);
+      
       if ('ok' in result) {
         return result.ok;
       }

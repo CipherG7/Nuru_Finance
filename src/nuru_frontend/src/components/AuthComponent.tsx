@@ -17,9 +17,18 @@ export const AuthComponent: React.FC = () => {
     const mockPrincipal = Principal.fromText("rdmx6-jaaaa-aaaah-qcaiq-cai");
     
     try {
-      await login(mockPrincipal);
-      if (!user.profile) {
-        setShowCreateUser(true);
+      const userIsRegistered = await login(mockPrincipal);
+      
+      // If user is not registered, automatically register them
+      if (!userIsRegistered) {
+        console.log("User not registered, auto-registering...");
+        const registrationSuccess = await registerUser();
+        if (registrationSuccess) {
+          console.log("User automatically registered successfully!");
+        } else {
+          console.error("Failed to auto-register user");
+          setShowCreateUser(true); // Fallback to manual registration
+        }
       }
     } catch (error) {
       console.error("Login failed:", error);

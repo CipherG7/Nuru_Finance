@@ -11,27 +11,43 @@ export const AuthComponent: React.FC = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
 
+  // Debug user state changes
+  console.log('=== AUTH COMPONENT RENDER ===');
+  console.log('Current user state:', user);
+  console.log('Is loading:', isLoading);
+  console.log('============================');
+
   const handleMockLogin = async () => {
     // For demo purposes, create a mock principal
     // In a real app, this would come from Internet Identity
-    const mockPrincipal = Principal.fromText("rdmx6-jaaaa-aaaah-qcaiq-cai");
+    const mockPrincipal = Principal.fromText("2vxsx-fae"); // Valid test principal
     
     try {
+      console.log("🎯 AuthComponent: Starting login process...");
       const userIsRegistered = await login(mockPrincipal);
+      console.log("🎯 AuthComponent: Login completed. User is registered:", userIsRegistered);
       
-      // If user is not registered, automatically register them
+      // If user is not registered, automatically register them and wait for completion
       if (!userIsRegistered) {
-        console.log("User not registered, auto-registering...");
+        console.log("🎯 AuthComponent: User not registered, auto-registering...");
         const registrationSuccess = await registerUser();
-        if (registrationSuccess) {
-          console.log("User automatically registered successfully!");
-        } else {
-          console.error("Failed to auto-register user");
-          setShowCreateUser(true); // Fallback to manual registration
+        console.log("🎯 AuthComponent: Registration completed successfully:", registrationSuccess);
+        
+        if (!registrationSuccess) {
+          console.error("🎯 AuthComponent: Failed to auto-register user");
+          alert("Failed to register user. Please try again.");
+          return;
         }
+        
+        console.log("🎯 AuthComponent: User successfully registered and ready to use the app!");
+        alert("Welcome! Your account has been created successfully.");
+      } else {
+        console.log("🎯 AuthComponent: User was already registered, ready to use the app!");
+        alert("Welcome back! You're now connected.");
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("🎯 AuthComponent: Login failed:", error);
+      alert("Login failed. Please try again.");
     }
   };
 
@@ -103,16 +119,23 @@ export const AuthComponent: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center space-x-4">
-      <div className="text-white">
-        <div className="font-semibold">Connected User</div>
-        <div className="text-sm text-gray-300">
-          Balance: {user.bitcoinBalance.toFixed(8)} BTC
-        </div>
+    <div>
+      {/* Debug info - remove in production */}
+      <div style={{ fontSize: '10px', color: '#666', marginBottom: '10px' }}>
+        Debug: Auth={user?.isAuthenticated ? 'YES' : 'NO'} | Reg={user?.isRegistered ? 'YES' : 'NO'} | Principal={user?.principal?.toString().slice(0, 10)}...
       </div>
-      <Button onClick={logout} variant="outline" size="sm">
-        Disconnect
-      </Button>
+      
+      <div className="flex items-center space-x-4">
+        <div className="text-white">
+          <div className="font-semibold">Connected User</div>
+          <div className="text-sm text-gray-300">
+            Balance: {user.bitcoinBalance.toFixed(8)} BTC
+          </div>
+        </div>
+        <Button onClick={logout} variant="outline" size="sm">
+          Disconnect
+        </Button>
+      </div>
     </div>
   );
 };

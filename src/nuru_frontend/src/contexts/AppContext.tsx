@@ -107,15 +107,19 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (principal: Principal): Promise<boolean> => {
+    console.log("🚀 AppContext: Starting login with principal:", principal.toString());
     setIsLoading(true);
     setError(null);
     
     try {
       // Fetch user profile
+      console.log("🔍 AppContext: Fetching user profile...");
       const profile = await backendService.getUserProfile();
+      console.log("🔍 AppContext: Profile result:", profile);
       
       if (!profile) {
         // User doesn't exist, might need to register
+        console.log("👤 AppContext: User doesn't exist, setting as unauthenticated/unregistered");
         setUser((prev: AppUser) => ({
           ...prev,
           principal,
@@ -126,6 +130,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         return false; // User needs registration
       } else {
         // User exists, load their data
+        console.log("👤 AppContext: User exists, loading data...");
         const bitcoinBalance = await backendService.getBalance();
 
         setUser({
@@ -138,8 +143,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         return true; // User is already registered
       }
     } catch (err) {
+      console.error("❌ AppContext: Login error:", err);
       setError("Failed to login");
-      console.error("Login error:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -167,17 +172,32 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setError(null);
 
     try {
+      console.log("AppContext: Starting user registration...");
       const success = await backendService.registerUser();
+      console.log("AppContext: Registration backend result:", success);
+      
       if (success) {
-        // Refresh user profile after registration
+        // Refresh user profile after registration and ensure state is updated
+        console.log("AppContext: Fetching updated user profile...");
         const profile = await backendService.getUserProfile();
-        setUser((prev: AppUser) => ({ 
-          ...prev, 
-          profile,
-          isRegistered: true 
-        }));
+        console.log("AppContext: Updated profile:", profile);
+        
+        setUser((prev: AppUser) => {
+          const updatedUser = { 
+            ...prev, 
+            profile,
+            isRegistered: true 
+          };
+          console.log("AppContext: Updated user state:", updatedUser);
+          return updatedUser;
+        });
+        
+        console.log("AppContext: User registration completed successfully");
+        return true;
+      } else {
+        console.error("AppContext: Backend registration failed");
+        return false;
       }
-      return success;
     } catch (err) {
       setError("Failed to register user");
       console.error("User registration error:", err);

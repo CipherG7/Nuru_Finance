@@ -19,21 +19,35 @@ import type { Proposal } from "../../../declarations/canister_three/canister_thr
 import type { YieldStrategy, UserPosition } from "../../../declarations/canister_four/canister_four.did";
 import type { Wallet } from "../../../declarations/canister_two/canister_two.did";
 
-// Define the host based on environment - use environment variables from Vite
-const HOST = import.meta.env.DFX_NETWORK === "local" 
-  ? "http://localhost:4943" 
-  : "https://ic0.app";
+// Define the host based on environment - force local development for now
+const isDevelopment = import.meta.env.DEV || import.meta.env.DFX_NETWORK === "local" || !import.meta.env.DFX_NETWORK;
+const HOST = isDevelopment ? "http://localhost:4943" : "https://ic0.app";
+
+console.log("🔧 Backend Configuration:", {
+  isDevelopment,
+  HOST,
+  DFX_NETWORK: import.meta.env.DFX_NETWORK,
+  DEV: import.meta.env.DEV,
+  CANISTER_ID_NURU_BACKEND: import.meta.env.CANISTER_ID_NURU_BACKEND
+});
 
 // Create HTTP agent
 const agent = new HttpAgent({ host: HOST });
 
 // Only fetch root key when in development
-if (import.meta.env.DFX_NETWORK !== "ic") {
+if (isDevelopment) {
   agent.fetchRootKey().catch(err => {
     console.warn("Unable to fetch root key. Check to ensure that your local replica is running");
     console.error(err);
   });
 }
+
+console.log("🎯 Canister IDs:", {
+  nuruBackendCanisterId,
+  bitcoinCanisterId,
+  governanceCanisterId,
+  yieldCanisterId
+});
 
 // Create actor instances
 export const nuruBackendActor = createNuruBackendActor(nuruBackendCanisterId, { agent });
@@ -54,25 +68,37 @@ export const backendService = {
   // Main backend operations
   async getUserProfile(): Promise<User | null> {
     try {
+      console.log("🔍 Backend service: Calling getUserProfile...");
+      console.log("🔍 Using actor:", nuruBackendActor);
+      
       const result = await nuruBackendActor.getUserProfile();
+      console.log("🔍 Backend service: getUserProfile result:", result);
+      
       if ('ok' in result) {
+        console.log("✅ User profile found:", result.ok);
         return result.ok;
       }
+      console.log("❌ No user profile found");
       return null;
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error("❌ Error fetching user profile:", error);
       return null;
     }
   },
 
   async registerUser(): Promise<boolean> {
     try {
-      console.log("Backend service: Calling registerUser...");
+      console.log("🔧 Backend service: Calling registerUser...");
+      console.log("🔧 Using actor:", nuruBackendActor);
+      
       const result = await nuruBackendActor.registerUser();
-      console.log("Backend service: registerUser result:", result);
-      return 'ok' in result;
+      console.log("🔧 Backend service: registerUser result:", result);
+      
+      const success = 'ok' in result;
+      console.log(success ? "✅ Registration successful" : "❌ Registration failed");
+      return success;
     } catch (error) {
-      console.error("Error registering user:", error);
+      console.error("❌ Error registering user:", error);
       return false;
     }
   },

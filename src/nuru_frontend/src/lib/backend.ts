@@ -1,5 +1,6 @@
 import { HttpAgent } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
+import { Ed25519KeyIdentity } from "@dfinity/identity";
 
 // Import the generated actor factories and IDL
 import { createActor as createNuruBackendActor } from "../../../declarations/nuru_backend";
@@ -31,8 +32,18 @@ console.log("🔧 Backend Configuration:", {
   CANISTER_ID_NURU_BACKEND: import.meta.env.CANISTER_ID_NURU_BACKEND
 });
 
-// Create HTTP agent
-const agent = new HttpAgent({ host: HOST });
+// Create a development identity for consistent caller principal
+const mockIdentity = Ed25519KeyIdentity.generate(); // This will create a consistent identity
+console.log("🔑 Mock Identity Principal:", mockIdentity.getPrincipal().toString());
+
+// Export the identity for use in AuthComponent
+export { mockIdentity };
+
+// Create HTTP agent with identity
+const agent = new HttpAgent({ 
+  host: HOST,
+  identity: mockIdentity
+});
 
 // Only fetch root key when in development
 if (isDevelopment) {

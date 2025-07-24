@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Principal } from "@dfinity/principal";
 import { Button } from "./ui/button";
 import { useApp } from "../contexts/AppContext";
+
+// Import the agent's identity to get the consistent principal
+import { mockIdentity } from "../lib/backend";
 
 // For demo purposes, we'll use a simple mock authentication
 // In a real app, you'd integrate with Internet Identity or another auth provider
@@ -18,12 +20,12 @@ export const AuthComponent: React.FC = () => {
   console.log('============================');
 
   const handleMockLogin = async () => {
-    // For demo purposes, create a mock principal
-    // In a real app, this would come from Internet Identity
-    const mockPrincipal = Principal.fromText("2vxsx-fae"); // Valid test principal
+    // Use the same principal that the agent is using
+    const mockPrincipal = mockIdentity.getPrincipal();
     
     try {
       console.log("🎯 AuthComponent: Starting login process...");
+      console.log("🎯 AuthComponent: Using principal:", mockPrincipal.toString());
       const userIsRegistered = await login(mockPrincipal);
       console.log("🎯 AuthComponent: Login completed. User is registered:", userIsRegistered);
       

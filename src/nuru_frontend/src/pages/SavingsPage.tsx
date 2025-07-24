@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useApp } from "../contexts/AppContext"
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
@@ -14,45 +15,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { Bitcoin, Users, Shield, Plus, Calendar, User } from "lucide-react"
 
-// Mock data for existing pools
-const mockActivePools = [
-  {
-    id: 1,
-    name: "Emergency Fund Pool",
-    creator: "alice.btc",
-    currentAmount: 2.45,
-    targetAmount: 5.0,
-    members: 12,
-    deadline: "2024-06-15",
-    type: "group" as "individual" | "group",
-    description: "Community emergency fund for unexpected expenses",
-  },
-  {
-    id: 2,
-    name: "Vacation Savings",
-    creator: "bob.crypto",
-    currentAmount: 1.23,
-    targetAmount: 3.0,
-    members: 8,
-    deadline: "2024-07-01",
-    type: "group" as "individual" | "group",
-    description: "Save together for a group vacation",
-  },
-  {
-    id: 3,
-    name: "House Down Payment",
-    creator: "charlie.hodl",
-    currentAmount: 0.87,
-    targetAmount: 2.0,
-    members: 1,
-    deadline: "2024-12-31",
-    type: "individual" as "individual" | "group",
-    description: "Personal savings for house down payment",
-  },
-]
-
 export default function SavingsPage() {
+  const { 
+    savingsPools, 
+    getAllActivePools, 
+    createSavingsPool, 
+    joinPool, 
+    depositToPool,
+    registerUser,
+    user,
+    isLoading 
+  } = useApp();
+
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isCreatingPool, setIsCreatingPool] = useState(false)
   const [newPool, setNewPool] = useState({
     name: "",
     targetAmount: "",
@@ -61,27 +37,95 @@ export default function SavingsPage() {
     description: "",
   })
 
-  const handleCreatePool = () => {
-    // In real app, this would call your SavingsApp canister's createSavingsPool function
-    console.log("Creating pool:", newPool)
-    setIsCreateDialogOpen(false)
-    setNewPool({
-      name: "",
-      targetAmount: "",
-      deadline: "",
-      type: "group",
-      description: "",
-    })
+  // Load pools data on component mount
+  useEffect(() => {
+    getAllActivePools();
+  }, [getAllActivePools]);
+
+  const handleCreatePool = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Validate form
+    if (!newPool.name || !newPool.targetAmount || !newPool.deadline || !newPool.type) {
+      alert('Please fill in all fields')
+      return
+    }
+
+    setIsCreatingPool(true)
+    console.log('Starting pool creation process...')
+    
+    try {
+      // First ensure user is registered
+      console.log('Checking if user is registered...')
+      if (!user || !user.isRegistered) {
+        console.log('User not registered, registering now...')
+        const registrationResult = await registerUser()
+        console.log('Registration result:', registrationResult)
+        
+        if (!registrationResult) {
+          throw new Error('Failed to register user')
+        }
+      } else {
+        console.log('User already registered:', user)
+      }
+
+      // Create the pool data
+      const poolName = newPool.name
+      const targetAmountNum = Math.floor(parseFloat(newPool.targetAmount) * 100) // Convert to cents/smallest unit
+      const durationBigInt = BigInt(parseInt(newPool.deadline))
+      const poolType = newPool.type
+      
+      console.log('Creating pool with data:', {
+        name: poolName,
+        targetAmount: targetAmountNum,
+        duration: durationBigInt,
+        poolType
+      })
+      
+      const result = await createSavingsPool(poolName, targetAmountNum, durationBigInt, poolType)
+      console.log('Pool creation result:', result)
+      
+      if (result) {
+        console.log('Pool created successfully!')
+        // Reset form
+        setNewPool({
+          name: "",
+          targetAmount: "",
+          deadline: "",
+          type: "group",
+          description: "",
+        })
+        
+        // Close dialog and refresh pools list
+        setIsCreateDialogOpen(false)
+        await getAllActivePools()
+        alert('Pool created successfully!')
+      } else {
+        throw new Error('Failed to create pool')
+      }
+    } catch (error) {
+      console.error('Error creating pool:', error)
+      alert(`Error creating pool: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsCreatingPool(false)
+    }
   }
 
-  const handleJoinPool = (poolId: number) => {
-    // In real app, this would call your SavingsApp canister's joinPool function
-    console.log("Joining pool:", poolId)
+  const handleJoinPool = async (poolId: number) => {
+    try {
+      await joinPool(BigInt(poolId));
+    } catch (err) {
+      console.error("Failed to join pool:", err);
+    }
   }
 
-  const handleDepositToPool = (poolId: number, amount: string) => {
-    // In real app, this would call your SavingsApp canister's depositToPool function
-    console.log("Depositing to pool:", poolId, "amount:", amount)
+  const handleDepositToPool = async (poolId: number, amount: string) => {
+    try {
+      const depositAmount = parseFloat(amount);
+      await depositToPool(BigInt(poolId), depositAmount);
+    } catch (err) {
+      console.error("Failed to deposit to pool:", err);
+    }
   }
 
   return (
@@ -191,8 +235,12 @@ export default function SavingsPage() {
                     className="bg-gray-800 border-gray-700"
                   />
                 </div>
-                <Button onClick={handleCreatePool} className="w-full bg-orange-600 hover:bg-orange-700">
-                  Create Pool
+                <Button 
+                  onClick={handleCreatePool} 
+                  className="w-full bg-orange-600 hover:bg-orange-700"
+                  disabled={isCreatingPool || !newPool.name || !newPool.targetAmount || !newPool.deadline}
+                >
+                  {isCreatingPool ? "Creating Pool..." : "Create Pool"}
                 </Button>
               </div>
             </DialogContent>
@@ -206,7 +254,7 @@ export default function SavingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm">Total Pools</p>
-                  <p className="text-2xl font-bold text-white">{mockActivePools.length}</p>
+                  <p className="text-2xl font-bold text-white">{savingsPools.length}</p>
                 </div>
                 <div className="w-12 h-12 bg-orange-600/20 rounded-lg flex items-center justify-center">
                   <Shield className="w-6 h-6 text-orange-400" />
@@ -221,7 +269,7 @@ export default function SavingsPage() {
                 <div>
                   <p className="text-gray-400 text-sm">Total Saved</p>
                   <p className="text-2xl font-bold text-white">
-                    ₿{mockActivePools.reduce((sum, pool) => sum + pool.currentAmount, 0).toFixed(3)}
+                    ₿{savingsPools.reduce((sum, pool) => sum + pool.currentAmount, 0).toFixed(3)}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
@@ -237,7 +285,7 @@ export default function SavingsPage() {
                 <div>
                   <p className="text-gray-400 text-sm">Active Members</p>
                   <p className="text-2xl font-bold text-white">
-                    {mockActivePools.reduce((sum, pool) => sum + pool.members, 0)}
+                    {savingsPools.reduce((sum, pool) => sum + pool.members.length, 0)}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center">
@@ -264,20 +312,20 @@ export default function SavingsPage() {
 
           <TabsContent value="all" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockActivePools.map((pool) => (
-                <Card key={pool.id} className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors">
+              {savingsPools.map((pool) => (
+                <Card key={Number(pool.id)} className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white text-lg">{pool.name}</CardTitle>
                       <Badge
                         className={
-                          pool.type === "group" ? "bg-blue-900/50 text-blue-400" : "bg-purple-900/50 text-purple-400"
+                          'group' in pool.poolType ? "bg-blue-900/50 text-blue-400" : "bg-purple-900/50 text-purple-400"
                         }
                       >
-                        {pool.type}
+                        {'group' in pool.poolType ? 'group' : 'individual'}
                       </Badge>
                     </div>
-                    <p className="text-gray-400 text-sm">{pool.description}</p>
+                    <p className="text-gray-400 text-sm">Pool ID: {Number(pool.id)}</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
@@ -296,31 +344,33 @@ export default function SavingsPage() {
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center space-x-1 text-gray-400">
                         <User className="w-4 h-4" />
-                        <span>{pool.creator}</span>
+                        <span>{pool.creator.toString()}</span>
                       </div>
                       <div className="flex items-center space-x-1 text-gray-400">
                         <Users className="w-4 h-4" />
-                        <span>{pool.members}</span>
+                        <span>{pool.members.length}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-1 text-gray-400 text-sm">
                       <Calendar className="w-4 h-4" />
-                      <span>Due: {pool.deadline}</span>
+                      <span>Due: {new Date(Number(pool.deadline) / 1000000).toLocaleDateString()}</span>
                     </div>
 
                     <div className="flex space-x-2">
-                      {pool.type === "group" && (
+                      {'group' in pool.poolType && (
                         <Button
-                          onClick={() => handleJoinPool(pool.id)}
+                          onClick={() => handleJoinPool(Number(pool.id))}
                           className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                          disabled={isLoading}
                         >
                           Join Pool
                         </Button>
                       )}
                       <Button
-                        onClick={() => handleDepositToPool(pool.id, "0.01")}
+                        onClick={() => handleDepositToPool(Number(pool.id), "0.01")}
                         className="flex-1 bg-orange-600 hover:bg-orange-700"
+                        disabled={isLoading}
                       >
                         Deposit
                       </Button>
@@ -333,11 +383,11 @@ export default function SavingsPage() {
 
           <TabsContent value="group">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockActivePools
-                .filter((pool) => pool.type === "group")
+              {savingsPools
+                .filter((pool) => 'group' in pool.poolType)
                 .map((pool) => (
                   <Card
-                    key={pool.id}
+                    key={Number(pool.id)}
                     className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors"
                   >
                     <CardHeader>
@@ -347,7 +397,7 @@ export default function SavingsPage() {
                           group
                         </Badge>
                       </div>
-                      <p className="text-gray-400 text-sm">{pool.description}</p>
+                      <p className="text-gray-400 text-sm">Pool ID: {Number(pool.id)}</p>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
@@ -363,24 +413,26 @@ export default function SavingsPage() {
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center space-x-1 text-gray-400">
                           <User className="w-4 h-4" />
-                          <span>{pool.creator}</span>
+                          <span>{pool.creator.toString()}</span>
                         </div>
                         <div className="flex items-center space-x-1 text-gray-400">
                           <Users className="w-4 h-4" />
-                          <span>{pool.members}</span>
+                          <span>{pool.members.length}</span>
                         </div>
                       </div>
 
                       <div className="flex space-x-2">
                         <Button
-                          onClick={() => handleJoinPool(pool.id)}
+                          onClick={() => handleJoinPool(Number(pool.id))}
                           className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                          disabled={isLoading}
                         >
                           Join Pool
                         </Button>
                         <Button
-                          onClick={() => handleDepositToPool(pool.id, "0.01")}
+                          onClick={() => handleDepositToPool(Number(pool.id), "0.01")}
                           className="flex-1 bg-orange-600 hover:bg-orange-700"
+                          disabled={isLoading}
                         >
                           Deposit
                         </Button>
@@ -393,11 +445,11 @@ export default function SavingsPage() {
 
           <TabsContent value="individual">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockActivePools
-                .filter((pool) => pool.type === "individual")
+              {savingsPools
+                .filter((pool) => 'individual' in pool.poolType)
                 .map((pool) => (
                   <Card
-                    key={pool.id}
+                    key={Number(pool.id)}
                     className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors"
                   >
                     <CardHeader>
@@ -407,7 +459,7 @@ export default function SavingsPage() {
                           individual
                         </Badge>
                       </div>
-                      <p className="text-gray-400 text-sm">{pool.description}</p>
+                      <p className="text-gray-400 text-sm">Pool ID: {Number(pool.id)}</p>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
@@ -422,12 +474,13 @@ export default function SavingsPage() {
 
                       <div className="flex items-center space-x-1 text-gray-400 text-sm">
                         <User className="w-4 h-4" />
-                        <span>{pool.creator}</span>
+                        <span>{pool.creator.toString()}</span>
                       </div>
 
                       <Button
-                        onClick={() => handleDepositToPool(pool.id, "0.01")}
+                        onClick={() => handleDepositToPool(Number(pool.id), "0.01")}
                         className="w-full bg-orange-600 hover:bg-orange-700"
+                        disabled={isLoading}
                       >
                         Deposit
                       </Button>

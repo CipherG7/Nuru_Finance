@@ -11,6 +11,7 @@ interface AppUser {
   profile: User | null;
   bitcoinBalance: number;
   isAuthenticated: boolean;
+  isRegistered: boolean;
   principal: Principal | null;
 }
 
@@ -24,7 +25,7 @@ interface AppContextType {
   error: string | null;
   
   // User actions
-  login: (principal: Principal) => Promise<void>;
+  login: (principal: Principal) => Promise<boolean>;
   logout: () => void;
   registerUser: () => Promise<boolean>;
   
@@ -72,6 +73,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     profile: null,
     bitcoinBalance: 0,
     isAuthenticated: false,
+    isRegistered: false,
     principal: null
   });
   
@@ -104,7 +106,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     initializeApp();
   }, []);
 
-  const login = async (principal: Principal): Promise<void> => {
+  const login = async (principal: Principal): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     
@@ -118,8 +120,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
           ...prev,
           principal,
           isAuthenticated: true,
+          isRegistered: false,
           profile: null
         }));
+        return false; // User needs registration
       } else {
         // User exists, load their data
         const bitcoinBalance = await backendService.getBalance();
@@ -128,8 +132,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
           profile,
           bitcoinBalance,
           isAuthenticated: true,
+          isRegistered: true,
           principal
         });
+        return true; // User is already registered
       }
     } catch (err) {
       setError("Failed to login");
@@ -145,6 +151,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       profile: null,
       bitcoinBalance: 0,
       isAuthenticated: false,
+      isRegistered: false,
       principal: null
     });
     setError(null);
@@ -164,7 +171,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       if (success) {
         // Refresh user profile after registration
         const profile = await backendService.getUserProfile();
-        setUser((prev: AppUser) => ({ ...prev, profile }));
+        setUser((prev: AppUser) => ({ 
+          ...prev, 
+          profile,
+          isRegistered: true 
+        }));
       }
       return success;
     } catch (err) {

@@ -52,21 +52,40 @@ export default function SavingsPage() {
     }
 
     setIsCreatingPool(true)
+    console.log('=== POOL CREATION DEBUG START ===')
     console.log('Starting pool creation process...')
     
     try {
-      // First ensure user is registered
-      console.log('Checking if user is registered...')
-      if (!user || !user.isRegistered) {
-        console.log('User not registered, registering now...')
+      // Enhanced debugging of user state
+      console.log('=== USER STATE DEBUG ===')
+      console.log('Full user object:', user)
+      console.log('User exists:', !!user)
+      console.log('Is authenticated:', user?.isAuthenticated)
+      console.log('Is registered:', user?.isRegistered) 
+      console.log('Has profile:', !!user?.profile)
+      console.log('Principal:', user?.principal?.toString())
+      console.log('=========================')
+      
+      if (!user) {
+        throw new Error('User object is null. Please connect your wallet first.')
+      }
+      
+      if (!user.isAuthenticated) {
+        throw new Error('User not authenticated. Please connect your wallet first.')
+      }
+      
+      if (!user.isRegistered) {
+        console.log('User not registered at pool creation time, registering now...')
         const registrationResult = await registerUser()
-        console.log('Registration result:', registrationResult)
+        console.log('Emergency registration result:', registrationResult)
         
         if (!registrationResult) {
-          throw new Error('Failed to register user')
+          throw new Error('Failed to register user. Please try connecting your wallet again.')
         }
-      } else {
-        console.log('User already registered:', user)
+        
+        // Wait a moment for state to update
+        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log('User state after emergency registration:', user);
       }
 
       // Create the pool data
@@ -101,13 +120,16 @@ export default function SavingsPage() {
         await getAllActivePools()
         alert('Pool created successfully!')
       } else {
-        throw new Error('Failed to create pool')
+        throw new Error('Failed to create pool - backend returned null')
       }
     } catch (error) {
+      console.error('=== POOL CREATION ERROR ===')
       console.error('Error creating pool:', error)
+      console.error('============================')
       alert(`Error creating pool: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsCreatingPool(false)
+      console.log('=== POOL CREATION DEBUG END ===')
     }
   }
 

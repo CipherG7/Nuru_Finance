@@ -77,7 +77,7 @@ actor GovernanceKYC {
     };
     
     // Admin function to verify KYC (simplified for hackathon)
-    public shared(msg) func verifyKYC(userId: UserId, approved: Bool): async Result.Result<Text, Text> {
+    public shared(_msg) func verifyKYC(userId: UserId, approved: Bool): async Result.Result<Text, Text> {
         switch(kycRecords.get(userId)) {
             case null { #err("KYC record not found") };
             case (?kyc) {
@@ -176,7 +176,7 @@ actor GovernanceKYC {
                 
                 // Check if already voted
                 switch(votes.get(voteKey)) {
-                    case (?existingVote) { return #err("Already voted on this proposal") };
+                    case (?_existingVote) { return #err("Already voted on this proposal") };
                     case null { };
                 };
                 

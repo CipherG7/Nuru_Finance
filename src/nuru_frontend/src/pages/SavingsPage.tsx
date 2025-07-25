@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { LoginComponent } from "../components/LoginComponent";
 "use client"
 
 import { useState, useEffect } from "react"
@@ -177,7 +178,7 @@ export default function SavingsPage() {
           <Link to="/wallet" className="text-gray-300 hover:text-white transition-colors">
             Wallet
           </Link>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">Connected</Button>
+          <LoginComponent />
         </div>
       </nav>
 

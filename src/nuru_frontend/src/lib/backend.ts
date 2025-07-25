@@ -1,210 +1,250 @@
+// backend.ts - Fixed version with better error handling
 import { HttpAgent } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
-import { Ed25519KeyIdentity } from "@dfinity/identity";
+import { Identity } from "@dfinity/agent";
 
-// Import the generated actor factories and IDL
+// Import the generated actor factories
 import { createActor as createNuruBackendActor } from "../../../declarations/nuru_backend";
 import { createActor as createBitcoinActor } from "../../../declarations/canister_two";
 import { createActor as createGovernanceActor } from "../../../declarations/canister_three";
 import { createActor as createYieldActor } from "../../../declarations/canister_four";
 
-// Import canister IDs
+// Canister IDs
 import { canisterId as nuruBackendCanisterId } from "../../../declarations/nuru_backend";
 import { canisterId as bitcoinCanisterId } from "../../../declarations/canister_two";
 import { canisterId as governanceCanisterId } from "../../../declarations/canister_three";
 import { canisterId as yieldCanisterId } from "../../../declarations/canister_four";
 
-// Import types from generated declarations
+// Types from Motoko did
 import type { User, SavingsPool, Investment } from "../../../declarations/nuru_backend/nuru_backend.did";
 import type { Proposal } from "../../../declarations/canister_three/canister_three.did";
 import type { YieldStrategy, UserPosition } from "../../../declarations/canister_four/canister_four.did";
 import type { Wallet } from "../../../declarations/canister_two/canister_two.did";
 
-// Define the host based on environment - force local development for now
-const isDevelopment = import.meta.env.DEV || import.meta.env.DFX_NETWORK === "local" || !import.meta.env.DFX_NETWORK;
+// ENV setup
+const isDevelopment = import.meta.env.DEV || import.meta.env.DFX_NETWORK === "local";
 const HOST = isDevelopment ? "http://localhost:4943" : "https://ic0.app";
 
-console.log("🔧 Backend Configuration:", {
-  isDevelopment,
-  HOST,
-  DFX_NETWORK: import.meta.env.DFX_NETWORK,
-  DEV: import.meta.env.DEV,
-  CANISTER_ID_NURU_BACKEND: import.meta.env.CANISTER_ID_NURU_BACKEND
-});
+console.log("Backend Config:", { isDevelopment, HOST });
 
-// Create a development identity for consistent caller principal
-const mockIdentity = Ed25519KeyIdentity.generate(); // This will create a consistent identity
-console.log("🔑 Mock Identity Principal:", mockIdentity.getPrincipal().toString());
+let nuruBackendActor: any = null;
+let bitcoinActor: any = null;
+let governanceActor: any = null;
+let yieldActor: any = null;
 
-// Export the identity for use in AuthComponent
-export { mockIdentity };
+// Create actors after login
+export const initializeActors = (identity: Identity) => {
+  console.log("Initializing actors with principal:", identity.getPrincipal().toString());
+  const agent = new HttpAgent({ host: HOST, identity });
 
-// Create HTTP agent with identity
-const agent = new HttpAgent({ 
-  host: HOST,
-  identity: mockIdentity
-});
+  if (isDevelopment) {
+    agent.fetchRootKey().catch(err => {
+      console.warn("Failed to fetch root key", err);
+    });
+  }
 
-// Only fetch root key when in development
-if (isDevelopment) {
-  agent.fetchRootKey().catch(err => {
-    console.warn("Unable to fetch root key. Check to ensure that your local replica is running");
-    console.error(err);
-  });
-}
-
-console.log("🎯 Canister IDs:", {
-  nuruBackendCanisterId,
-  bitcoinCanisterId,
-  governanceCanisterId,
-  yieldCanisterId
-});
-
-// Create actor instances
-export const nuruBackendActor = createNuruBackendActor(nuruBackendCanisterId, { agent });
-export const bitcoinActor = createBitcoinActor(bitcoinCanisterId, { agent });
-export const governanceActor = createGovernanceActor(governanceCanisterId, { agent });
-export const yieldActor = createYieldActor(yieldCanisterId, { agent });
-
-// Export canister IDs for reference
-export {
-  nuruBackendCanisterId,
-  bitcoinCanisterId,
-  governanceCanisterId,
-  yieldCanisterId
+  nuruBackendActor = createNuruBackendActor(nuruBackendCanisterId, { agent });
+  bitcoinActor = createBitcoinActor(bitcoinCanisterId, { agent });
+  governanceActor = createGovernanceActor(governanceCanisterId, { agent });
+  yieldActor = createYieldActor(yieldCanisterId, { agent });
 };
 
-// Helper functions for common backend operations
+const ensureActorsInitialized = () => {
+  if (!nuruBackendActor) {
+    throw new Error("Actors not initialized! Please login first.");
+  }
+};
+
 export const backendService = {
-  // Main backend operations
+  async registerUser(): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log("🔄 Starting registerUser...");
+      ensureActorsInitialized();
+      
+      console.log("🔄 Calling Motoko registerUser function...");
+      const result = await nuruBackendActor.registerUser();
+      console.log("📋 Raw Motoko registerUser result:", result);
+      console.log("📋 Result type:", typeof result);
+      console.log("📋 Result keys:", Object.keys(result));
+
+      // Handle Motoko Result<Text, Text> type
+      if (result && typeof result === 'object') {
+        if ('ok' in result) {
+          console.log("Registration successful:", result.ok);
+          return { success: true, message: result.ok };
+        } else if ('err' in result) {
+          console.log("Registration failed:", result.err);
+          return { success: false, message: result.err };
+        }
+      }
+      
+      // Fallback for unexpected result format
+      console.error("Unexpected result format:", result);
+      return { success: false, message: "Unexpected response format from backend" };
+      
+    } catch (error) {
+      console.error("registerUser caught exception:");
+      console.error("Error object:", error);
+      console.error("Error message:", error instanceof Error ? error.message : 'Unknown error');
+      console.error("Error stack:", error instanceof Error ? error.stack : 'No stack');
+      
+      // Handle specific error types
+      if (error instanceof Error) {
+        if (error.message.includes('not initialized')) {
+          return { success: false, message: "Please connect your wallet first" };
+        }
+        if (error.message.includes('network')) {
+          return { success: false, message: "Network error. Please check your connection." };
+        }
+        return { success: false, message: `Registration error: ${error.message}` };
+      }
+      
+      return { success: false, message: "Unexpected error during registration" };
+    }
+  },
+
   async getUserProfile(): Promise<User | null> {
     try {
-      console.log("🔍 Backend service: Calling getUserProfile...");
-      console.log("🔍 Using actor:", nuruBackendActor);
-      
+      console.log("Fetching user profile...");
+      ensureActorsInitialized();
       const result = await nuruBackendActor.getUserProfile();
-      console.log("🔍 Backend service: getUserProfile result:", result);
+      console.log("getUserProfile result:", result);
       
-      if ('ok' in result) {
-        console.log("✅ User profile found:", result.ok);
+      if ("ok" in result) {
+        console.log("User profile found");
         return result.ok;
+      } else if ("err" in result) {
+        console.log("User profile error:", result.err);
+        return null;
       }
-      console.log("❌ No user profile found");
       return null;
     } catch (error) {
-      console.error("❌ Error fetching user profile:", error);
+      console.error("Error fetching user profile:", error);
       return null;
     }
   },
 
-  async registerUser(): Promise<boolean> {
-    try {
-      console.log("🔧 Backend service: Calling registerUser...");
-      console.log("🔧 Using actor:", nuruBackendActor);
-      
-      const result = await nuruBackendActor.registerUser();
-      console.log("🔧 Backend service: registerUser result:", result);
-      
-      const success = 'ok' in result;
-      console.log(success ? "✅ Registration successful" : "❌ Registration failed");
-      return success;
-    } catch (error) {
-      console.error("❌ Error registering user:", error);
-      return false;
-    }
-  },
-
-  // Savings operations
   async getAllActivePools(): Promise<SavingsPool[]> {
     try {
+      console.log("Fetching all active pools...");
+      ensureActorsInitialized();
       const result = await nuruBackendActor.getAllActivePools();
-      return result;
+      console.log("getAllActivePools result:", result);
+      return result || [];
     } catch (error) {
-      console.error("Error fetching active pools:", error);
+      console.error("Error fetching pools:", error);
       return [];
     }
   },
 
-  async createSavingsPool(name: string, targetAmount: number, deadline: bigint, poolType: 'individual' | 'group'): Promise<bigint | null> {
+  async createSavingsPool(
+    name: string,
+    targetAmount: number,
+    deadline: bigint,
+    poolType: "individual" | "group"
+  ): Promise<bigint | null> {
     try {
-      console.log("Backend service: Creating pool with params:", { name, targetAmount, deadline, poolType });
+      console.log("Creating savings pool:", { name, targetAmount, deadline, poolType });
+      ensureActorsInitialized();
       
-      const poolTypeValue = poolType === 'individual' ? { individual: null } : { group: null };
-      // Convert targetAmount to Float and deadline to Time.Time (Int)
-      const targetAmountFloat = parseFloat(targetAmount.toString());
-      const deadlineInt = BigInt(Date.now() + Number(deadline) * 24 * 60 * 60 * 1000); // Convert days to milliseconds from now
+      const poolTypeValue = poolType === "individual" ? { individual: null } : { group: null };
+      console.log("Pool type value:", poolTypeValue);
       
-      console.log("Backend service: Converted params:", { 
-        name, 
-        targetAmountFloat, 
-        deadlineInt: deadlineInt.toString(), 
-        poolTypeValue 
-      });
+      const result = await nuruBackendActor.createSavingsPool(name, targetAmount, deadline, poolTypeValue);
+      console.log("createSavingsPool result:", result);
       
-      const result = await nuruBackendActor.createSavingsPool(name, targetAmountFloat, deadlineInt, poolTypeValue);
-      console.log("Backend service: createSavingsPool result:", result);
-      
-      if ('ok' in result) {
+      if ("ok" in result) {
+        console.log("Pool created successfully with ID:", result.ok);
         return result.ok;
+      } else if ("err" in result) {
+        console.error("Pool creation failed:", result.err);
+        throw new Error(result.err);
       }
       return null;
     } catch (error) {
       console.error("Error creating savings pool:", error);
-      return null;
+      throw error; // Re-throw to be handled by calling function
     }
   },
 
   async joinPool(poolId: bigint): Promise<boolean> {
     try {
+      console.log("Joining pool:", poolId);
+      ensureActorsInitialized();
       const result = await nuruBackendActor.joinPool(poolId);
-      return 'ok' in result;
+      console.log("joinPool result:", result);
+      
+      if ("ok" in result) {
+        console.log("Successfully joined pool");
+        return true;
+      } else if ("err" in result) {
+        console.error("Failed to join pool:", result.err);
+        throw new Error(result.err);
+      }
+      return false;
     } catch (error) {
       console.error("Error joining pool:", error);
-      return false;
+      throw error;
     }
   },
 
   async depositToPool(poolId: bigint, amount: number): Promise<boolean> {
     try {
+      console.log("Depositing to pool:", { poolId, amount });
+      ensureActorsInitialized();
       const result = await nuruBackendActor.depositToPool(poolId, amount);
-      return 'ok' in result;
-    } catch (error) {
-      console.error("Error depositing to pool:", error);
+      console.log("depositToPool result:", result);
+      
+      if ("ok" in result) {
+        console.log("Deposit successful");
+        return true;
+      } else if ("err" in result) {
+        console.error("Deposit failed:", result.err);
+        throw new Error(result.err);
+      }
       return false;
-    }
-  },
-
-  async getUserInvestments(userId: Principal): Promise<Investment[]> {
-    try {
-      const result = await nuruBackendActor.getUserInvestments(userId);
-      return result;
     } catch (error) {
-      console.error("Error fetching user investments:", error);
-      return [];
+      console.error("Error depositing:", error);
+      throw error;
     }
   },
 
   async startInvestment(amount: number, duration: bigint): Promise<boolean> {
     try {
+      console.log("Starting investment:", { amount, duration });
+      ensureActorsInitialized();
       const result = await nuruBackendActor.startInvestment(amount, duration);
-      return 'ok' in result;
+      console.log("startInvestment result:", result);
+      
+      if ("ok" in result) {
+        console.log("Investment started successfully");
+        return true;
+      } else if ("err" in result) {
+        console.error("Investment failed:", result.err);
+        throw new Error(result.err);
+      }
+      return false;
     } catch (error) {
       console.error("Error starting investment:", error);
-      return false;
+      throw error;
     }
   },
 
-  async calculateReturns(): Promise<number> {
+  async getUserInvestments(userId: Principal): Promise<Investment[]> {
     try {
-      const result = await nuruBackendActor.calculateReturns();
-      return result;
+      console.log("Fetching user investments for:", userId.toString());
+      ensureActorsInitialized();
+      const result = await nuruBackendActor.getUserInvestments(userId);
+      console.log("getUserInvestments result:", result);
+      return result || [];
     } catch (error) {
-      console.error("Error calculating returns:", error);
-      return 0;
+      console.error("Error fetching investments:", error);
+      return [];
     }
   },
 
-  // Bitcoin operations
+  
+  // Bitcoin operations 
   async getWalletInfo(): Promise<Wallet | null> {
     try {
       const result = await bitcoinActor.getWalletInfo();
@@ -264,7 +304,7 @@ export const backendService = {
     }
   },
 
-  // Governance operations
+  // Governance operations 
   async getActiveProposals(): Promise<Proposal[]> {
     try {
       const result = await governanceActor.getActiveProposals();
@@ -312,7 +352,7 @@ export const backendService = {
     }
   },
 
-  // Yield operations
+  // Yield operations 
   async getAvailableStrategies(): Promise<YieldStrategy[]> {
     try {
       const result = await yieldActor.getAvailableStrategies();

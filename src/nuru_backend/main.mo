@@ -55,7 +55,7 @@ actor SavingsApp {
         let userId = msg.caller;
         
         switch(users.get(userId)) {
-            case (?user) { #err("User already registered") };
+            case (?_user) { #err("User already registered") };
             case null {
                 let newUser: User = {
                     id = userId;
@@ -76,7 +76,7 @@ actor SavingsApp {
         
         switch(users.get(userId)) {
             case null { #err("User not registered") };
-            case (?user) {
+            case (?_user) {
                 let poolId = nextPoolId;
                 nextPoolId += 1;
                 

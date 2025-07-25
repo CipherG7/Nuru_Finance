@@ -2,8 +2,6 @@ import Principal "mo:base/Principal";
 import Time "mo:base/Time";
 import HashMap "mo:base/HashMap";
 import Result "mo:base/Result";
-import Blob "mo:base/Blob";
-import Nat8 "mo:base/Nat8";
 import Text "mo:base/Text";
 import Nat64 "mo:base/Nat64";
 import Int "mo:base/Int";

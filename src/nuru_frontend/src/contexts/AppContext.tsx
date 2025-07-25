@@ -107,19 +107,19 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (principal: Principal): Promise<boolean> => {
-    console.log("🚀 AppContext: Starting login with principal:", principal.toString());
+    console.log("AppContext: Starting login with principal:", principal.toString());
     setIsLoading(true);
     setError(null);
     
     try {
       // Fetch user profile
-      console.log("🔍 AppContext: Fetching user profile...");
+      console.log("AppContext: Fetching user profile...");
       const profile = await backendService.getUserProfile();
-      console.log("🔍 AppContext: Profile result:", profile);
+      console.log("AppContext: Profile result:", profile);
       
       if (!profile) {
         // User doesn't exist, might need to register
-        console.log("👤 AppContext: User doesn't exist, setting as unauthenticated/unregistered");
+        console.log("AppContext: User doesn't exist, setting as unauthenticated/unregistered");
         setUser((prev: AppUser) => ({
           ...prev,
           principal,
@@ -130,7 +130,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         return false; // User needs registration
       } else {
         // User exists, load their data
-        console.log("👤 AppContext: User exists, loading data...");
+        console.log("AppContext: User exists, loading data...");
         const bitcoinBalance = await backendService.getBalance();
 
         setUser({
@@ -143,7 +143,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         return true; // User is already registered
       }
     } catch (err) {
-      console.error("❌ AppContext: Login error:", err);
+      console.error("AppContext: Login error:", err);
       setError("Failed to login");
       throw err;
     } finally {
@@ -162,9 +162,19 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setError(null);
   };
 
+  // Updated registerUser to handle the new return type
   const registerUser = async (): Promise<boolean> => {
+    console.log("AppContext: Starting registerUser...");
+    
     if (!user.principal) {
+      console.error("AppContext: No principal available for user registration");
       setError("No principal available for user registration");
+      return false;
+    }
+
+    if (!user.isAuthenticated) {
+      console.error("AppContext: User not authenticated");
+      setError("User not authenticated. Please connect your wallet first.");
       return false;
     }
 
@@ -172,11 +182,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setError(null);
 
     try {
-      console.log("AppContext: Starting user registration...");
-      const success = await backendService.registerUser();
-      console.log("AppContext: Registration backend result:", success);
+      console.log("AppContext: Calling backendService.registerUser...");
+      const result = await backendService.registerUser(); // Now returns { success: boolean; message: string }
+      console.log("AppContext: Registration backend result:", result);
       
-      if (success) {
+      if (result.success) {
+        console.log("AppContext: Registration successful, message:", result.message);
+        
         // Refresh user profile after registration and ensure state is updated
         console.log("AppContext: Fetching updated user profile...");
         const profile = await backendService.getUserProfile();
@@ -195,15 +207,18 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         console.log("AppContext: User registration completed successfully");
         return true;
       } else {
-        console.error("AppContext: Backend registration failed");
+        console.error("AppContext: Backend registration failed:", result.message);
+        setError(`Registration failed: ${result.message}`);
         return false;
       }
     } catch (err) {
-      setError("Failed to register user");
-      console.error("User registration error:", err);
+      console.error("AppContext: User registration error:", err);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+      setError(`Failed to register user: ${errorMessage}`);
       return false;
     } finally {
       setIsLoading(false);
+      console.log("AppContext: registerUser completed");
     }
   };
 

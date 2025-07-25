@@ -14,5 +14,13 @@
   "type": "module",
   "workspaces": [
     "src/nuru_frontend"
-  ]
+  ],
+  "dependencies": {
+    "@dfinity/agent": "^2.4.1",
+    "@dfinity/auth-client": "^2.4.1",
+    "@dfinity/principal": "^2.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0"
+  }
 }

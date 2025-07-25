@@ -40,6 +40,10 @@ Nuru Finance is built as a multi-canister application on the Internet Computer:
 └── nuru_frontend                   # React TypeScript frontend application
 ```
 
+##  Pitch-Deck
+https://docs.google.com/presentation/d/1xqolEPvv72BphxwvgASr87t__41lDvw3BO9Mlh2QTqY/edit?usp=sharing
+
+
 ##  Quick Start
 
 ### Prerequisites
